@@ -1,0 +1,4 @@
+master_image=vladimirtkach/hbase_master
+slave_image=vladimirtkach/hbase_slave
+disks_folder=/cluster_disks
+#drill=apache-drill-1.12.0-SNAPSHOT.tar.gz

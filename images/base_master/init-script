@@ -1,0 +1,23 @@
+#/bin/bash
+
+service sshd start
+
+IP=$(ip addr show eth0 | grep -w inet | awk '{ print $2}' | cut -d "/" -f1)
+echo -e "${IP}\t$(hostname -f).mapr.io\t$(hostname) " >> /etc/hosts
+
+#dd if=/dev/zero of=/opt/mapr/docker.disk bs=1G count=20
+
+/opt/mapr/server/mruuidgen > /opt/mapr/hostid
+cat /opt/mapr/hostid > /opt/mapr/conf/hostid.$$
+
+cp /proc/meminfo /opt/mapr/conf/meminfofake
+
+sed -i "/^MemTotal/ s/^.*$/MemTotal:     ${MEMTOTAL} kB/" /opt/mapr/conf/meminfofake
+sed -i "/^MemFree/ s/^.*$/MemFree:     ${MEMTOTAL-10} kB/" /opt/mapr/conf/meminfofake
+sed -i "/^MemAvailable/ s/^.*$/MemAvailable:     ${MEMTOTAL-10} kB/" /opt/mapr/conf/meminfofake
+
+sed -i 's/AddUdevRules(list/#AddUdevRules(list/' /opt/mapr/server/disksetup
+
+/opt/mapr/server/configure.sh -C ${IP} -Z ${IP} -D ${DISKLIST} -N ${CLUSTERNAME}.mapr.io -u mapr -g mapr -noDB -RM ${IP} 
+
+echo "This container IP : ${IP}"

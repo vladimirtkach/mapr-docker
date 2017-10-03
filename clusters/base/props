@@ -1,0 +1,4 @@
+master_image=vladimirtkach/base_master
+slave_image=vladimirtkach/base_slave
+disks_folder=/cluster_disks
+#drill=apache-drill-1.12.0-SNAPSHOT.tar.gz
